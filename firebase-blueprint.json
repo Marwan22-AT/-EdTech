@@ -1,0 +1,65 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "language": { "type": "string", "enum": ["ar", "en"] },
+        "role": { "type": "string", "enum": ["user", "guest"] },
+        "enrolledCourses": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["uid", "displayName"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Educational course details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "object", "properties": { "en": { "type": "string" }, "ar": { "type": "string" } } },
+        "description": { "type": "object", "properties": { "en": { "type": "string" }, "ar": { "type": "string" } } },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "currency": { "type": "string" },
+        "thumbnail": { "type": "string" },
+        "instructor": { "type": "string" },
+        "rating": { "type": "number" },
+        "isFree": { "type": "boolean" }
+      },
+      "required": ["id", "title", "price"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "Links users to courses",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "enrolledAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "courseId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Course catalog"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "User course enrollments"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // User Profiles
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Users cannot list other users
+      allow create: if isOwner(userId) && 
+        incoming().keys().hasAll(['uid', 'displayName']) &&
+        incoming().role == 'user'; // Default role
+      allow update: if isOwner(userId) && 
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'language', 'enrolledCourses']);
+    }
+
+    // Course Catalog
+    match /courses/{courseId} {
+      allow read: if true; // Courses are public
+      allow write: if false; // Only admin (server-side/manual) can write
+    }
+
+    // Enrollments
+    match /enrollments/{enrollmentId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && 
+        incoming().userId == request.auth.uid &&
+        isValidId(incoming().courseId);
+      allow update, delete: if false; // Enrollments are immutable
+    }
+  }
+}

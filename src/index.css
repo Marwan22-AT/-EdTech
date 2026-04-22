@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #0f172a;
+  --color-accent: #3b82f6;
+  --color-bg-polish: #f8fafc;
+}
+
+:root {
+  --primary: #0f172a;
+  --accent: #3b82f6;
+  --bg: #f8fafc;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--primary);
+}
+
+[lang="ar"] {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
